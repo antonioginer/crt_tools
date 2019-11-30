@@ -1,0 +1,19 @@
+Mode table methods
+==================
+
+· Static: modes are generated keeping their original refresh. The modes gererated by this method are intended for emulators that can't manage video timings directly (all except GroovyMAME). This method is not recommended for MAME due to the huge amount of modes that will be created (see remarks below).
+
+· Dynamic: modes are generated keeping their original width and height while replacing their original refresh by a dummy default value (60 Hz). The original refresh will be restored by the emulator at run-time. This is the recommended method is to be used with Groovymame. It allows to keep the mode list reasonably short.
+
+· Magic: modes are generated replacing their width and refresh by dummy values, only keeping the original height. This method greatly reduces the required mode list. It's only supported by GroovyMAME on Windows XP. For Windows 7 and higher use a dynamic table of "super resolutions" instead.
+
+Remarks
+=======
+
+When using the static table method, care must be taken if you're defining two instances of a given resolution with different but close refresh rates (closer than 1 Hz). You may run into an issue because the operating system labels the refresh rate with an integer number. For this reason both modeline definitions will overlap. The traditional workaround has been incrementing the logical width of the video mode by one pixel for each refresh variant, and matching each game with the proper variant in its .ini file. VMM does this automatically for you in order to avoid overlapping labels. Unfortunately this workaround no longer works in Windows 7, making the static table method mostly unusable for XML sources in practical cases.
+
+In this situation, the use of GroovyMAME combined with a dynamic Table is the only reasonable approach. However, you will still need the static Table method to deal with the video modes required by other emulators that don't manage refresh rates by themselves like GroovyMAME does. In these cases, you will need to define the video modes with their exact refresh rates in your user modes .ini file, paying attention not to generate cases where the refresh rates would overlap as described above. VMMaker will warn you about this problem if it happens.
+
+When using the magic table, GroovyMAME overwrites the dummy "1234" with value with the native width of the emulated game, creating a genuine modeline with the required width. This is actually a hack and may work great in many systems while causing issues in a few. It is strongly recommended to use Direct3D instead of DirectDraw when using this method.
+
+As an alternative to the magic table that is compatible with both Windows XP and 7, you can use "super" resolutions. This is a special case of dynamic table, where the native width is substituted by a super-wide resolution, usually 2560, meant to perform fractional stretching over the horizontal axis, while keeping the native height unmodified. Due to the nature of CRT monitors, provided a high enough horizontal resolution is used this method produces no visual artifacts. A special "user_modes - super.ini" file is provided with instructions to set up "super" resolutions. This method is becoming the rule in the emulation scene, driving the other ones into obsolescence.
