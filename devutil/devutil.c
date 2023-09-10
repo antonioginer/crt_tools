@@ -235,9 +235,9 @@ int device_reset(int argc, char *argv[])
 
 int device_set_status(const char *hardware_id, int state_change)
 {
-	int i, found;
+	int i = 0, found;
 	HDEVINFO hDI;
-	SP_DEVINFO_DATA spDID;
+	SP_DEVINFO_DATA spDID = {};
 
 	hDI = SetupDiGetClassDevs(NULL, "PCI", NULL, DIGCF_ALLCLASSES | DIGCF_PRESENT);
 	if (hDI == INVALID_HANDLE_VALUE) return FALSE;
@@ -266,5 +266,6 @@ int device_set_status(const char *hardware_id, int state_change)
 		}
 		i++;
 	}
+	return false;
 }
 
